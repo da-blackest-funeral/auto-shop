@@ -16,7 +16,6 @@ class CreateCarsTable extends Migration
         Schema::create('cars', function (Blueprint $table) {
             $table->id();
             $table->string('model')->unique();
-            $table->string('vin')->unique();
             $table->string('registration_number')->unique();
             $table->string('brand');
             $table->integer('year');
