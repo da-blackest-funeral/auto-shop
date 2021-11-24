@@ -14,4 +14,13 @@ class Attribute extends Model
         'value',
         'description'
     ];
+
+    protected $hidden = [
+        'updated_at'
+    ];
+
+    public function autoparts()
+    {
+        return $this->belongsToMany(Autopart::class, 'attribute_autopart');
+    }
 }

@@ -15,4 +15,24 @@ class Autopart extends Model
         'article',
         'category_id'
     ];
+
+    protected $hidden = [
+        'pivot',
+        'updated_at'
+    ];
+
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class, 'attribute_autopart');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function cars()
+    {
+        return $this->belongsToMany(Car::class, 'autopart_cars');
+    }
 }

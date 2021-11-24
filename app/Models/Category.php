@@ -12,4 +12,13 @@ class Category extends Model
     protected $fillable = [
         'title'
     ];
+
+    protected $hidden = [
+      'updated_at'
+    ];
+
+    public function autoparts()
+    {
+        return $this->hasMany(Autopart::class);
+    }
 }

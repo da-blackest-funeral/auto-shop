@@ -13,12 +13,12 @@ class CreateCarCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('car_categories', function (Blueprint $table) {
+        Schema::create('autopart_category', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('car_id');
-            $table->unsignedBigInteger('categories_id');
-            $table->foreign('car_id')->references('id')->on('cars');
-            $table->foreign('categories_id')->references('id')->on('categories');
+            $table->unsignedBigInteger('autopart_id');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('autopart_id')->references('id')->on('autoparts');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
         });
     }
