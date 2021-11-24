@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AutopartController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\CategoryController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*

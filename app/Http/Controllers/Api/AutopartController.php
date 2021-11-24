@@ -9,63 +9,45 @@ use Illuminate\Http\Request;
 
 class AutopartController extends Controller
 {
+    protected $request;
+
+    protected $validatedRequest;
+
+    protected $requestValues;
+
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+        $this->validatedRequest = $this->validateRequest();
+        $this->requestValues = $this->setRequestValues();
+    }
+
     /**
      * Display a listing of the resource
      */
     public function index()
     {
-        return response()->json(Autopart::with('attributes')->get());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(
+            Autopart::with('attributes')
+                ->paginate(50)
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(): \Illuminate\Http\JsonResponse
     {
-        $requestValues = [];
-        if (
-            $request->input('attributenames') !== null &&
-            $request->input('attributevalues') !== null
-        ) {
-            $requestValues = array_combine(
-                $request->input('attributenames'),
-                $request->input('attributevalues')
-            );
-        }
+        $attributes = $this->makeAutopartAttributes();
 
-        $attributes = [];
-        foreach ($requestValues as $title => $value) {
-            $attribute = new Attribute;
-            $attribute->title = $title;
-            $attribute->value = $value;
-
-            $attributes[] = $attribute;
-        }
-
-        $validatedFields = $request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'article' => '',
-            'category_id' => 'required',
-        ]);
+        $validatedFields = $this->validatedRequest;
 
         $autopart = Autopart::create([
             'name' => $validatedFields['name'],
             'price' => $validatedFields['price'],
-            'article' => $validatedFields['article'],
+            'article' => $validatedFields['article'] ?? 'Артикул не задан.',
             'category_id' => $validatedFields['category_id']
         ]);
 
@@ -77,45 +59,102 @@ class AutopartController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Autopart $autopart
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(Autopart $autopart)
     {
-        //return res
+        return response()->json(
+            $autopart->load('attributes')
+        );
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified resource in storage
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Autopart $autopart
      */
-    public function edit($id)
+    public function update(Autopart $autopart)
     {
-        //
-    }
+        $attributesIds = $this->getAttributesIds($this->makeAutopartAttributes());
+        $autopart->attributes()->sync($attributesIds);
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return response()->json($autopart->load('attributes'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Autopart $autopart
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Autopart $autopart)
     {
-        //
+        $autopart->delete();
+        return response('Удалено', 201);
+    }
+
+    /**
+     * @return array
+     */
+    protected function makeAutopartAttributes(): array
+    {
+        $attributes = [];
+        foreach ($this->requestValues as $title => $value) {
+            $attribute = new Attribute;
+            $attribute->title = $title;
+            $attribute->value = $value;
+            $attribute->save();
+
+            $attributes[] = $attribute;
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * @return array
+     */
+    protected function setRequestValues(): array
+    {
+        $requestValues = [];
+        if (
+            $this->request->input('attributenames') !== null &&
+            $this->request->input('attributevalues') !== null
+        ) {
+            $requestValues = array_combine(
+                $this->request->input('attributenames'),
+                $this->request->input('attributevalues')
+            );
+        }
+
+        return $requestValues;
+    }
+
+    /**
+     * @param $attributes
+     * @return array
+     */
+    protected function getAttributesIds($attributes): array
+    {
+        $Ids = [];
+        foreach ($attributes as $attribute) {
+            $Ids[] = $attribute->id;
+        }
+
+        return $Ids;
+    }
+
+    /**
+     * @return array
+     */
+    protected function validateRequest(): array
+    {
+        return $this->request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'article' => '',
+            'category_id' => 'required',
+        ]);
     }
 }
