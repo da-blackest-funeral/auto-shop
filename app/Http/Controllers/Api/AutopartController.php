@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attribute;
 use App\Models\Autopart;
 use Illuminate\Http\Request;
 
@@ -29,29 +30,65 @@ class AutopartController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $requestValues = [];
+        if (
+            $request->input('attributenames') !== null &&
+            $request->input('attributevalues') !== null
+        ) {
+            $requestValues = array_combine(
+                $request->input('attributenames'),
+                $request->input('attributevalues')
+            );
+        }
+
+        $attributes = [];
+        foreach ($requestValues as $title => $value) {
+            $attribute = new Attribute;
+            $attribute->title = $title;
+            $attribute->value = $value;
+
+            $attributes[] = $attribute;
+        }
+
+        $validatedFields = $request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'article' => '',
+            'category_id' => 'required',
+        ]);
+
+        $autopart = Autopart::create([
+            'name' => $validatedFields['name'],
+            'price' => $validatedFields['price'],
+            'article' => $validatedFields['article'],
+            'category_id' => $validatedFields['category_id']
+        ]);
+
+        $autopart->attributes()->saveMany($attributes);
+
+        return response()->json($autopart->load('attributes'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Autopart $autopart)
     {
-        //
+        //return res
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -62,8 +99,8 @@ class AutopartController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -74,7 +111,7 @@ class AutopartController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

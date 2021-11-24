@@ -16,9 +16,14 @@ class Attribute extends Model
     ];
 
     protected $hidden = [
-        'updated_at'
+        'updated_at',
+        'pivot',
     ];
 
+    /*
+     * TODO сделать autopart_id в таблице attributes
+     * и связсь один ко многим
+    */
     public function autoparts()
     {
         return $this->belongsToMany(Autopart::class, 'attribute_autopart');
