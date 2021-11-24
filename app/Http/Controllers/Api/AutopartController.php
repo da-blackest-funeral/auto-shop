@@ -76,6 +76,8 @@ class AutopartController extends Controller
      */
     public function update(Autopart $autopart)
     {
+        $autopart->update($this->validatedRequest);
+
         $attributesIds = $this->getAttributesIds($this->makeAutopartAttributes());
         $autopart->attributes()->sync($attributesIds);
 
