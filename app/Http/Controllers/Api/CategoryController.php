@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Autopart;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -29,7 +30,7 @@ class CategoryController extends Controller
     {
         return response()->json(
             Category::create([
-                'title' => $request->validate(['title' => 'required'])
+                'title' => $request->validate(['title' => 'required'])['title']
             ])
         );
     }
@@ -56,8 +57,17 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): \Illuminate\Http\JsonResponse
     {
-        $category->update($request->validate(['title' => 'required']));
-        $category->autoparts()->save($request->input('autoparts'));
+        if ($request->input('title') !== null) {
+            $category->update(
+                $request->validate(['title' => 'required'])['title']
+            );
+        }
+
+        $autoparts = Autopart::findMany(array_map('intval', $request->input('autoparts')));
+
+        if ($request->input('autoparts') !== null) {
+            $category->autoparts()->saveMany($autoparts);
+        }
 
         return response()->json($category->load('autoparts'));
     }
@@ -65,7 +75,7 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param Category $category
      * @return \Illuminate\Http\Response
      */
     public function destroy(Category $category): Response
