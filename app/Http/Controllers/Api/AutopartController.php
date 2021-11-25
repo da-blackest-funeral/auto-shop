@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 use App\Models\Autopart;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class AutopartController extends Controller
 {
@@ -18,7 +19,7 @@ class AutopartController extends Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->validatedRequest = $this->validateRequest();
+        $this->validatedRequest = $this->validateRequest() ?? [];
         $this->requestValues = $this->setRequestValues();
     }
 
@@ -62,7 +63,7 @@ class AutopartController extends Controller
      * @param Autopart $autopart
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Autopart $autopart)
+    public function show(Autopart $autopart): \Illuminate\Http\JsonResponse
     {
         return response()->json(
             $autopart->load('attributes')
@@ -73,8 +74,9 @@ class AutopartController extends Controller
      * Update the specified resource in storage
      *
      * @param Autopart $autopart
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Autopart $autopart)
+    public function update(Autopart $autopart): \Illuminate\Http\JsonResponse
     {
         $autopart->update($this->validatedRequest);
 
@@ -93,7 +95,7 @@ class AutopartController extends Controller
     public function destroy(Autopart $autopart)
     {
         $autopart->delete();
-        return response('Удалено', 201);
+        return response('Удалено', Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -147,16 +149,15 @@ class AutopartController extends Controller
         return $Ids;
     }
 
-    /**
-     * @return array
-     */
-    protected function validateRequest(): array
+    protected function validateRequest()
     {
-        return $this->request->validate([
-            'name' => 'required',
-            'price' => 'required',
-            'article' => '',
-            'category_id' => 'required',
-        ]);
+        if ($this->request->method() == 'POST') {
+            return $this->request->validate([
+                'name' => 'required',
+                'price' => 'required',
+                'article' => '',
+                'category_id' => 'required',
+            ]);
+        }
     }
 }
