@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AttributesController;
 use App\Http\Controllers\Api\AutopartController;
 use App\Http\Controllers\Api\CarController;
 use App\Http\Controllers\Api\CategoryController;
@@ -24,4 +25,5 @@ Route::apiResources([
     '/autoparts' => AutopartController::class,
     '/cars' => CarController::class,
     '/categories' => CategoryController::class,
+    '/attributes' => AttributesController::class,
 ]);

@@ -21,18 +21,15 @@ class Autopart extends Model
         'updated_at'
     ];
 
-    public function attributes()
-    {
-        return $this->belongsToMany(Attribute::class, 'attribute_autopart');
+    public function attributes(): \Illuminate\Database\Eloquent\Relations\HasMany {
+        return $this->hasMany(Attribute::class);
     }
 
-    public function category()
-    {
+    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo {
         return $this->belongsTo(Category::class);
     }
 
-    public function cars()
-    {
+    public function cars(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
         return $this->belongsToMany(Car::class, 'autopart_cars');
     }
 }
