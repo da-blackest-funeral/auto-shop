@@ -12,7 +12,7 @@ class Attribute extends Model
     protected $fillable = [
         'title',
         'value',
-        'description'
+        'description',
     ];
 
     protected $hidden = [
@@ -20,12 +20,9 @@ class Attribute extends Model
         'pivot',
     ];
 
-    /*
-     * TODO сделать autopart_id в таблице attributes
-     * и связсь один ко многим
-    */
-    public function autoparts()
-    {
-        return $this->belongsToMany(Autopart::class, 'attribute_autopart');
+    // TODO сделать autopart_id в таблице attributes и связсь один ко многим
+
+    public function autoparts(): \Illuminate\Database\Eloquent\Relations\BelongsTo {
+        return $this->belongsTo(Autopart::class);
     }
 }

@@ -17,8 +17,7 @@ class Category extends Model
       'updated_at'
     ];
 
-    public function autoparts()
-    {
+    public function autoparts(): \Illuminate\Database\Eloquent\Relations\HasMany {
         return $this->hasMany(Autopart::class);
     }
 }

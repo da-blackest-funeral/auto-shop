@@ -24,8 +24,7 @@ class Car extends Model
       'updated_at'
     ];
 
-    public function autoparts()
-    {
+    public function autoparts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
         return $this->belongsToMany(Autopart::class, 'autopart_cars');
     }
 }
