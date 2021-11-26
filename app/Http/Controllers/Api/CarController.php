@@ -22,17 +22,16 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() {
+    public function index(): \Illuminate\Http\JsonResponse {
         return response()->json(Car::with('autoparts')->paginate(5));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request): \Illuminate\Http\JsonResponse {
+    public function store(): \Illuminate\Http\JsonResponse {
         $car = Car::create([
             'model' => $this->validatedRequest['model'],
             'brand' => $this->validatedRequest['brand']
@@ -54,7 +53,7 @@ class CarController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param Car $car
      * @return \Illuminate\Http\JsonResponse
      */
@@ -69,7 +68,7 @@ class CarController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Car $car
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Car $car): Response {
         $car->delete();
