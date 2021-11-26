@@ -151,7 +151,7 @@ class AutopartController extends Controller
 
     protected function validateRequest()
     {
-        if ($this->request->method() == 'POST') {
+        if ($this->request->method() === 'POST') {
             return $this->request->validate([
                 'name' => 'required',
                 'price' => 'required',

@@ -10,13 +10,11 @@ use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class CarController extends Controller
 {
-
     protected $request;
 
     protected $validatedRequest;
 
-    public function __construct(Request $request)
-    {
+    public function __construct(Request $request) {
         $this->request = $request;
         $this->validatedRequest = $this->validateRequest() ?? [];
     }
@@ -24,8 +22,7 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    public function index() {
         return response()->json(Car::with('autoparts')->paginate(5));
     }
 
@@ -35,13 +32,11 @@ class CarController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
-    {
-        $car = new Car;
-
-        $car->model = $this->validatedRequest['model'];
-        $car->brand = $this->validatedRequest['brand'];
-        $car->save();
+    public function store(Request $request): \Illuminate\Http\JsonResponse {
+        $car = Car::create([
+            'model' => $this->validatedRequest['model'],
+            'brand' => $this->validatedRequest['brand']
+        ]);
 
         return response()->json($car);
     }
@@ -52,8 +47,7 @@ class CarController extends Controller
      * @param Car $car
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Car $car): \Illuminate\Http\JsonResponse
-    {
+    public function show(Car $car): \Illuminate\Http\JsonResponse {
         return response()->json($car->load('autoparts'));
     }
 
@@ -64,8 +58,7 @@ class CarController extends Controller
      * @param Car $car
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Car $car): \Illuminate\Http\JsonResponse
-    {
+    public function update(Request $request, Car $car): \Illuminate\Http\JsonResponse {
         $car->update($this->validatedRequest);
         $car->autoparts()->sync($request->input('autoparts'));
 
@@ -78,14 +71,12 @@ class CarController extends Controller
      * @param Car $car
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Car $car): Response
-    {
+    public function destroy(Car $car): Response {
         $car->delete();
-        return response(null, Response::HTTP_NO_CONTENT);
+        return response(null, ResponseAlias::HTTP_NO_CONTENT);
     }
 
-    protected function validateRequest()
-    {
+    protected function validateRequest() {
         if ($this->request->method() == 'POST') {
             return $this->request->validate([
                 'model' => 'required',
