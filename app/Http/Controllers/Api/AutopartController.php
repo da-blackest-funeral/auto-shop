@@ -146,19 +146,6 @@ class AutopartController extends Controller
         return $requestValues;
     }
 
-//    /**
-//     * @param $attributes
-//     * @return array
-//     */
-//    protected function getAttributesIds($attributes): array {
-//        $Ids = [];
-//        foreach ($attributes as $attribute) {
-//            $Ids[] = $attribute->id;
-//        }
-//
-//        return $Ids;
-//    }
-
     protected function validateRequest() {
         if ($this->request->method() === 'POST') {
             return $this->request->validate([
